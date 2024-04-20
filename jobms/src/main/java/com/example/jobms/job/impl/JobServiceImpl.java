@@ -1,5 +1,6 @@
 package com.example.jobms.job.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,7 @@ import com.example.jobms.job.Job;
 import com.example.jobms.job.JobRepository;
 import com.example.jobms.job.JobService;
 import com.example.jobms.job.external.Company;
+import com.example.jobms.job.dto.JobWithCompanyDto;
 
 @Service
 public class JobServiceImpl implements JobService {
@@ -20,12 +22,22 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public List<Job> findAll() {
-        RestTemplate restTemplate = new RestTemplate();
-        Company company = restTemplate.getForObject("http://localhost:8081/companies/1", Company.class);
-        System.out.println("Company Name:" + company.getName());
+    public List<JobWithCompanyDto> findAll() {
 
-        return jobRepository.findAll();
+        List<Job> jobs = jobRepository.findAll();
+        List<JobWithCompanyDto> jobWithCompanyDtos = new ArrayList<>();
+        RestTemplate restTemplate = new RestTemplate();
+
+        for (Job job : jobs) {
+            JobWithCompanyDto jobWithCompanyDto = new JobWithCompanyDto();
+            jobWithCompanyDto.setJob(job);
+            Company company = restTemplate.getForObject("http://localhost:8081/companies/" + job.getCompanyId(),
+                    Company.class);
+            jobWithCompanyDto.setCompany(company);
+            jobWithCompanyDtos.add(jobWithCompanyDto);
+        }
+
+        return jobWithCompanyDtos;
     }
 
     @Override
