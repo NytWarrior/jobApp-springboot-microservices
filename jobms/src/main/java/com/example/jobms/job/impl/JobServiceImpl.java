@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,6 +17,9 @@ import com.example.jobms.job.dto.JobWithCompanyDto;
 @Service
 public class JobServiceImpl implements JobService {
     JobRepository jobRepository;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     public JobServiceImpl(JobRepository jobRepository) {
         this.jobRepository = jobRepository;
@@ -30,8 +34,8 @@ public class JobServiceImpl implements JobService {
     private JobWithCompanyDto convertToDto(Job job) {
         JobWithCompanyDto jobWithCompanyDto = new JobWithCompanyDto();
         jobWithCompanyDto.setJob(job);
-        RestTemplate restTemplate = new RestTemplate();
-        Company company = restTemplate.getForObject("http://localhost:8081/companies/" + job.getCompanyId(),
+        // RestTemplate restTemplate = new RestTemplate();
+        Company company = restTemplate.getForObject("http://COMPANY-SERVICE:8081/companies/" + job.getCompanyId(),
                 Company.class);
         jobWithCompanyDto.setCompany(company);
         return jobWithCompanyDto;
