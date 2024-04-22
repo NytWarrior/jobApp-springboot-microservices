@@ -5,6 +5,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -12,8 +15,9 @@ import com.example.jobms.job.Job;
 import com.example.jobms.job.JobRepository;
 import com.example.jobms.job.JobService;
 import com.example.jobms.job.external.Company;
+import com.example.jobms.job.external.Review;
 import com.example.jobms.job.mapper.JobMapper;
-import com.example.jobms.job.dto.JobWithCompanyDto;
+import com.example.jobms.job.dto.JobDTO;
 
 @Service
 public class JobServiceImpl implements JobService {
@@ -27,18 +31,26 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public List<JobWithCompanyDto> findAll() {
+    public List<JobDTO> findAll() {
         List<Job> jobs = jobRepository.findAll();
         return jobs.stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
-    private JobWithCompanyDto convertToDto(Job job) {
+    private JobDTO convertToDto(Job job) {
 
         // RestTemplate restTemplate = new RestTemplate();
         Company company = restTemplate.getForObject("http://COMPANY-SERVICE:8081/companies/" + job.getCompanyId(),
                 Company.class);
-        JobWithCompanyDto jobWithCompanyDto = JobMapper.mapToJobWithCompanyDto(job, company);
-        jobWithCompanyDto.setCompany(company);
+
+        ResponseEntity<List<Review>> reviewReponse = restTemplate.exchange(
+                "http://REVIEW-SERVICE:8083/reviews?companyId=" + job.getCompanyId(),
+                HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Review>>() {
+                });
+        List<Review> reviews = reviewReponse.getBody();
+        System.out.println(reviews);
+        JobDTO jobWithCompanyDto = JobMapper.mapToJobDto(job, company, reviews);
+        // jobWithCompanyDto.setCompany(company);
         return jobWithCompanyDto;
     }
 

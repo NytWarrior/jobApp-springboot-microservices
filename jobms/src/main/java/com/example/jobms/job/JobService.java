@@ -2,10 +2,10 @@ package com.example.jobms.job;
 
 import java.util.List;
 
-import com.example.jobms.job.dto.JobWithCompanyDto;
+import com.example.jobms.job.dto.JobDTO;
 
 public interface JobService {
-    List<JobWithCompanyDto> findAll();
+    List<JobDTO> findAll();
 
     void createJob(Job job);
 
