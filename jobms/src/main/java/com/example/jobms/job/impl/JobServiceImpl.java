@@ -12,6 +12,7 @@ import com.example.jobms.job.Job;
 import com.example.jobms.job.JobRepository;
 import com.example.jobms.job.JobService;
 import com.example.jobms.job.external.Company;
+import com.example.jobms.job.mapper.JobMapper;
 import com.example.jobms.job.dto.JobWithCompanyDto;
 
 @Service
@@ -32,11 +33,11 @@ public class JobServiceImpl implements JobService {
     }
 
     private JobWithCompanyDto convertToDto(Job job) {
-        JobWithCompanyDto jobWithCompanyDto = new JobWithCompanyDto();
-        jobWithCompanyDto.setJob(job);
+
         // RestTemplate restTemplate = new RestTemplate();
         Company company = restTemplate.getForObject("http://COMPANY-SERVICE:8081/companies/" + job.getCompanyId(),
                 Company.class);
+        JobWithCompanyDto jobWithCompanyDto = JobMapper.mapToJobWithCompanyDto(job, company);
         jobWithCompanyDto.setCompany(company);
         return jobWithCompanyDto;
     }
