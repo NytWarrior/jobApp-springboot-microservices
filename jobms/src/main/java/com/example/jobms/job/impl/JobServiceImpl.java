@@ -19,6 +19,9 @@ import com.example.jobms.job.JobService;
 import com.example.jobms.job.external.Company;
 import com.example.jobms.job.external.Review;
 import com.example.jobms.job.mapper.JobMapper;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 import com.example.jobms.job.dto.JobDTO;
 
 @Service
@@ -38,6 +41,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @CircuitBreaker(name = "companyBreaker")
     public List<JobDTO> findAll() {
         List<Job> jobs = jobRepository.findAll();
         return jobs.stream().map(this::convertToDto).collect(Collectors.toList());
