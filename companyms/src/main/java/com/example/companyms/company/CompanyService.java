@@ -2,6 +2,8 @@ package com.example.companyms.company;
 
 import java.util.List;
 
+import com.example.companyms.company.dto.ReviewMessage;
+
 public interface CompanyService {
     List<Company> getAllCompanies();
 
@@ -12,4 +14,6 @@ public interface CompanyService {
     boolean deleteCompanyById(Long id);
 
     Company getCompanyById(Long id);
+
+    public void updateCompanyRating(ReviewMessage reviewMessage);
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example.companyms.company.Company;
 import com.example.companyms.company.CompanyRepository;
 import com.example.companyms.company.CompanyService;
+import com.example.companyms.company.dto.ReviewMessage;
 
 @Service
 public class CompanyServiceImpl implements CompanyService {
@@ -55,5 +56,10 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public Company getCompanyById(Long id) {
         return companyRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public void updateCompanyRating(ReviewMessage reviewMessage) {
+        System.out.println(reviewMessage.getDescription());
     }
 }
