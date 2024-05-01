@@ -21,8 +21,9 @@ import com.example.jobms.job.external.Company;
 import com.example.jobms.job.external.Review;
 import com.example.jobms.job.mapper.JobMapper;
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 // import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
+// import io.github.resilience4j.retry.annotation.Retry;
 
 import com.example.jobms.job.dto.JobDTO;
 
@@ -36,7 +37,7 @@ public class JobServiceImpl implements JobService {
     private CompanyClient companyClient;
     private ReviewClient reviewClient;
 
-    int attempt = 0;
+    // int attempt = 0;
 
     public JobServiceImpl(JobRepository jobRepository, CompanyClient companyClient, ReviewClient reviewClient) {
         this.jobRepository = jobRepository;
@@ -47,9 +48,10 @@ public class JobServiceImpl implements JobService {
     @Override
     // @CircuitBreaker(name = "companyBreaker", fallbackMethod =
     // "companyBreakerFallback")
-    @Retry(name = "companyBreaker", fallbackMethod = "companyBreakerFallback")
+    // @Retry(name = "companyBreaker", fallbackMethod = "companyBreakerFallback")
+    @RateLimiter(name = "companyBreaker", fallbackMethod = "companyBreakerFallback")
     public List<JobDTO> findAll() {
-        System.out.println("Attempt: " + ++attempt);
+        // System.out.println("Attempt: " + ++attempt);
         List<Job> jobs = jobRepository.findAll();
         return jobs.stream().map(this::convertToDto).collect(Collectors.toList());
     }
